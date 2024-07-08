@@ -5,6 +5,7 @@ import { HttpResponseUtil } from "@spt/utils/HttpResponseUtil";
 
 import { FikaRaidController } from "../controllers/FikaRaidController";
 import { IFikaRaidServerIdRequestData } from "../models/fika/routes/raid/IFikaRaidServerIdRequestData";
+import { IFikaRaidVerifyInsuredItemsRequestData } from "../models/fika/routes/raid/IFikaRaidVerifyInsuredItemsRequestData";
 import { IFikaRaidCreateRequestData } from "../models/fika/routes/raid/create/IFikaRaidCreateRequestData";
 import { IFikaRaidJoinRequestData } from "../models/fika/routes/raid/join/IFikaRaidJoinRequestData";
 import { IFikaRaidLeaveRequestData } from "../models/fika/routes/raid/leave/IFikaRaidLeaveRequestData";
@@ -62,5 +63,11 @@ export class FikaRaidCallbacks {
     /** Handle /fika/raid/dedicated/getstatus */
     public handleRaidGetStatusDedicated(_url: string, _info: any, _sessionID: string): string {
         return this.httpResponseUtil.noBody(this.fikaRaidController.handleRaidGetStatusDedicated());
+    }
+    
+    /** Handle /fika/raid/verifyinsureditems */
+    public handleRaidVerifyInsuredItems(_url: string, info: IFikaRaidVerifyInsuredItemsRequestData, sessionID: string): INullResponseData {
+        this.fikaRaidController.handleRaidVerifyInsuredItems(info);
+        return this.httpResponseUtil.nullResponse();
     }
 }

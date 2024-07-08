@@ -21,6 +21,9 @@ import { IGetStatusDedicatedResponse } from "../models/fika/routes/raid/dedicate
 import { FikaDedicatedRaidWebSocket } from "../websockets/FikaDedicatedRaidWebSocket";
 import { IPmcData } from "@spt/models/eft/common/IPmcData";
 import { ProfileHelper } from "@spt/helpers/ProfileHelper";
+import { IFikaRaidVerifyInsuredItemsRequestData } from "../models/fika/routes/raid/IFikaRaidVerifyInsuredItemsRequestData";
+import { SaveServer } from "@spt/servers/SaveServer";
+import { ISptProfile } from "@spt/models/eft/profile/ISptProfile";
 
 @injectable()
 export class FikaRaidController {
@@ -30,6 +33,7 @@ export class FikaRaidController {
         @inject("FikaDedicatedRaidWebSocket") protected fikaDedicatedRaidWebSocket: FikaDedicatedRaidWebSocket,
         @inject("ProfileHelper") protected profileHelper: ProfileHelper,
         @inject("WinstonLogger") protected logger: ILogger,
+        @inject("SaveServer") protected saveServer: SaveServer,
     ) {
         // empty
     }
@@ -208,5 +212,63 @@ export class FikaRaidController {
                 available: true
             };
         }
+    }
+    
+    /**
+     * Handle /fika/raid/verifyinsureditems
+     * @param request
+     */
+    public handleRaidVerifyInsuredItems(request: IFikaRaidVerifyInsuredItemsRequestData): void {
+        const profiles: Record<string, ISptProfile> = this.saveServer.getProfiles();
+        if (!request.insuranceDatas) {
+            return;
+        }
+
+        for (const profileId in request.insuranceDatas) {
+            const profile = profiles[profileId];
+            if (!profile) {
+                continue;
+            }
+
+            const pickedUpItems = request.insuranceDatas[profileId];
+            if (profile.characters?.pmc?.InsuredItems) {
+                const newProfileInsuredItems = [];
+                const profileInsuredItems = profile.characters.pmc.InsuredItems;
+                for (const profileInsuredItem of profileInsuredItems) {
+                    const foundItem = profile.characters.pmc.Inventory.items.find(i => i._id == profileInsuredItem.itemId);
+                    if (!foundItem) {
+                        continue;
+                    }
+
+                    if (!pickedUpItems.find(item => item.itemId == (foundItem.upd as any)?.PreviousID)) {
+                        newProfileInsuredItems.push(profileInsuredItem);
+                    }
+                }
+
+                profile.characters.pmc.InsuredItems = newProfileInsuredItems;
+            }
+
+            {
+                const newInsurances = [];
+                const insurances = [];
+                for (const insurance of profile.insurance) {
+                    const insuranceItems = [];
+                    for (const profileInsuredItem of insurance.items) {
+                        if (!pickedUpItems.find(item => item.itemId == (profileInsuredItem.upd as any)?.PreviousID)) {
+                            insuranceItems.push(profileInsuredItem);
+                        }
+                    }
+
+                    if (insurance.items.length > 0) {
+                        insurance.items = insuranceItems;
+                        insurances.push(insurance);
+                    }
+                }
+
+                profile.insurance = newInsurances;
+            }
+
+        }
+
     }
 }

@@ -50,6 +50,8 @@ import { Fika } from "../Fika";
 import { FikaServerTools } from "../utils/FikaServerTools";
 import { FikaDedicatedProfileService } from "../services/dedicated/FikaDedicatedProfileService";
 
+import { ItemHelperOverride } from "../overrides/helpers/ItemHelper";
+import { FikaItemHelper } from "../helpers/FikaItemHelper";
 
 export class Container {
     public static register(container: DependencyContainer): void {
@@ -84,6 +86,7 @@ export class Container {
         container.registerType("Overrides", "LocalesOverride");
         container.registerType("Overrides", "AchievementControllerOverride");
         container.registerType("Overrides", "DatabaseServiceOverride");
+        container.registerType("Overrides", "ItemHelperOverride");
 
         container.registerType("StaticRoutes", "FikaClientStaticRouter");
         container.registerType("StaticRoutes", "FikaLocationStaticRouter");
@@ -111,6 +114,7 @@ export class Container {
         container.register<Overrider>("Overrider", Overrider, { lifecycle: Lifecycle.Singleton });
         container.register<AchievementControllerOverride>("AchievementControllerOverride", AchievementControllerOverride, { lifecycle: Lifecycle.Singleton });
         container.register<DatabaseServiceOverride>("DatabaseServiceOverride", DatabaseServiceOverride, { lifecycle: Lifecycle.Singleton });
+        container.register<ItemHelperOverride>("ItemHelperOverride", ItemHelperOverride, { lifecycle: Lifecycle.Singleton });
     }
 
     private static registerServices(container: DependencyContainer): void {
@@ -125,6 +129,7 @@ export class Container {
         container.register<FikaClientModHashesHelper>("FikaClientModHashesHelper", FikaClientModHashesHelper, { lifecycle: Lifecycle.Singleton });
         container.register<FikaFriendRequestsHelper>("FikaFriendRequestsHelper", FikaFriendRequestsHelper, { lifecycle: Lifecycle.Singleton });
         container.register<FikaPlayerRelationsHelper>("FikaPlayerRelationsHelper", FikaPlayerRelationsHelper, { lifecycle: Lifecycle.Singleton });
+        container.register<FikaItemHelper>("FikaItemHelper", FikaItemHelper, { lifecycle: Lifecycle.Singleton });
     }
 
     private static registerControllers(container: DependencyContainer): void {
