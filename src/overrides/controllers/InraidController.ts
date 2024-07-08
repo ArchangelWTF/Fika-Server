@@ -27,6 +27,7 @@ export class InraidControllerOverride extends Override {
                     }
                     else {
                         this.logger.error("Failed to find match");
+                        InraidController.prototype.savePostRaidProgress.call(result, offraidData, sessionID);
                     }
                 };
             },

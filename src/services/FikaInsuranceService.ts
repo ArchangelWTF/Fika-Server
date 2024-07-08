@@ -78,7 +78,8 @@ export class FikaInsuranceService {
         }
 
         InraidController.prototype.savePostRaidProgress.call(this.inraidController, offraidData, sessionID);
-        this.matchIdToPlayers[matchId] = this.matchIdToPlayers[matchId].filter(id => id != sessionID);
+        const index = this.matchIdToPlayers[matchId].indexOf(sessionID, 0);
+        this.matchIdToPlayers[matchId].splice(index, 1);
         if (this.matchIdToPlayers[matchId].length == 0) {
             this.logger.info("No more players left in match, removing it");
             this.onMatchEnd(matchId);
