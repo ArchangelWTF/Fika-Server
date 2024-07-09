@@ -108,10 +108,7 @@ export class FikaInsuranceService {
         delete this.matchIdToPlayers[matchId];
     }
 
-    public removeItemsFromInsurance(sessionID: string, ids: string[]) {
-        if (!this.insuranceService.insuranceExists(sessionID)) {
-            this.logger.warning("No insurance found");
-        }        
+    private removeItemsFromInsurance(sessionID: string, ids: string[]) {
         const insurances = this.insuranceService.getInsurance(sessionID);
         for (const tid in insurances) {
             let insuredItems = insurances[tid];
@@ -120,7 +117,7 @@ export class FikaInsuranceService {
                 if (insuredItemIndex != -1) {
                     const itemToRemove = insuredItems[insuredItemIndex];
                     this.logger.info(`Found ${itemToRemove._id} which will be removed`);
-                    insuredItems.splice(insuredItemIndex, 1);
+                    insuredItems = insuredItems.splice(insuredItemIndex, 1);
                 }
                 else {
                     this.logger.error(`Could not find ${idToRemove}`);
