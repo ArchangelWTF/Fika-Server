@@ -26,7 +26,7 @@ export class InraidControllerOverride extends Override {
                         this.fikaInsuranceService.onSavePostRaidProgress(sessionID, match, offraidData);
                     }
                     else {
-                        this.logger.error("Failed to find match");
+                        // Match was not found, or it's a scav raid
                         InraidController.prototype.savePostRaidProgress.call(result, offraidData, sessionID);
                     }
                 };

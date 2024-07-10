@@ -6,6 +6,7 @@ import { SaveServer } from "@spt/servers/SaveServer";
 
 import { FikaMatchEndSessionMessage } from "../models/enums/FikaMatchEndSessionMessages";
 import { FikaMatchStatus } from "../models/enums/FikaMatchStatus";
+import { FikaSide } from "../models/enums/FikaSide";
 import { IFikaMatch } from "../models/fika/IFikaMatch";
 import { IFikaPlayer } from "../models/fika/IFikaPlayer";
 import { IFikaRaidCreateRequestData } from "../models/fika/routes/raid/create/IFikaRaidCreateRequestData";
@@ -305,8 +306,12 @@ export class FikaMatchService {
             return;
         }
 
-        this.matches.get(matchId).players.set(playerId, data);
-        this.fikaInsuranceService.addInsuranceInformation(matchId, playerId);
+        const match = this.matches.get(matchId);
+        match.players.set(playerId, data);
+
+        if (match.side === FikaSide.PMC) {
+            this.fikaInsuranceService.addInsuranceInformation(matchId, playerId);
+        }
     }
 
     /**
